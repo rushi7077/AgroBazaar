@@ -82,7 +82,7 @@ public class OrderController {
     @PreAuthorize("hasAuthority('FARMER')")
     public ResponseEntity<?> getFarmerOrders(Authentication auth) {
         User farmer = userRepository.findByEmail(auth.getName()).orElseThrow();
-        return ResponseEntity.ok(orderItemRepository.findByFarmerId(farmer.getId()));
+        return ResponseEntity.ok(orderItemRepository.findByFarmerName(farmer.getId()));
     }
 
     // ✅ ADMIN GET ALL ORDERS
