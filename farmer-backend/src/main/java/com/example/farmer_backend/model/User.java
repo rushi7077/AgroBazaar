@@ -20,6 +20,7 @@ public class User implements UserDetails {
 
     private String name;
     private String email;
+    @JsonIgnore
     private String password;
 
     @ManyToOne
@@ -35,8 +36,16 @@ public class User implements UserDetails {
     }
 
     @Override public String getUsername() { return email; }
-    @Override public boolean isAccountNonExpired() { return true; }
-    @Override public boolean isAccountNonLocked() { return true; }
-    @Override public boolean isCredentialsNonExpired() { return true; }
-    @Override public boolean isEnabled() { return true; }
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonExpired() { return true; }
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonLocked() { return true; }
+    @JsonIgnore
+    @Override
+    public boolean isCredentialsNonExpired() { return true; }
+    @JsonIgnore
+    @Override
+    public boolean isEnabled() { return true; }
 }
