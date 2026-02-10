@@ -1,36 +1,63 @@
-import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../features/auth/authSlice";
-import { getRole } from "../utils/role";
-
+import { showSuccess } from "./Toast";
 
 export default function Navbar() {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
-    const role = getRole();
 
+    // 🔥 read user from Redux
+    const user = useSelector((state) => state.auth.user);
+    const role = user?.role || user?.authorities?.[0] || null;
+
+    const handleLogout = () => {
+        dispatch(logout());
+        showSuccess("Logged out successfully");
+        navigate("/auth/login");
+    };
 
     return (
-        <nav className="bg-green-700 text-white px-6 py-3 flex justify-between items-center">
+        <nav className="bg-green-700 text-white px-6 py-3 flex justify-between">
             <Link to="/" className="font-bold text-lg">AgroBazaar</Link>
 
+            <div className="space-x-4 flex items-center">
 
-            <div className="space-x-4">
-                <Link to="/">Home</Link>
-
-
+                {/* BEFORE LOGIN */}
                 {!role && <Link to="/auth/login">Login</Link>}
-                {!role && <Link to="/auth/register">Register</Link>}
 
+                {/* ADMIN */}
+                {role === "ADMIN" && (
+                    <>
+                        <Link to='/'>Products</Link>
+                        <Link to="/orders">Orders</Link>
+                        <Link to="/add-product">Add Product</Link> 
+                        <Link to="/admin">Admin Dashboard</Link>
+                        <Link to="/profile">Profile</Link>
+                        <button onClick={handleLogout}>Logout</button>
+                    </>
+                )}
 
-                {role === "USER" && <Link to="/orders">My Orders</Link>}
-                {role === "FARMER" && <Link to="/farmer">Farmer Panel</Link>}
-                {role === "ADMIN" && <Link to="/admin">Admin Panel</Link>}
+                {/* FARMER */}
+                {role === "FARMER" && (
+                    <>
+                        <Link to='/'>Products</Link>
+                        <Link to="/orders">Orders</Link>
+                        <Link to="/add-product">Add Product</Link> 
+                        <Link to="/farmer">Farmer Dashboard</Link>
+                        <Link to="/profile">Profile</Link>
+                        <button onClick={handleLogout}>Logout</button>
+                    </>
+                )}
 
-
-                {role && (
-                    <button onClick={() => dispatch(logout())} className="bg-red-500 px-3 py-1 rounded">
-                        Logout
-                    </button>
+                {/* USER */}
+                {role === "USER" && (
+                    <>
+                        <Link to='/'>Products</Link>
+                        <Link to="/cart">Cart</Link>
+                        <Link to="/profile">Profile</Link>
+                        <button onClick={handleLogout}>Logout</button>
+                    </>
                 )}
             </div>
         </nav>
