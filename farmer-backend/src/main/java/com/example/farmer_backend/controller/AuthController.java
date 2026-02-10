@@ -52,7 +52,9 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Email already exists");
         }
 
-        Role role = roleRepository.findByName(request.getRole().toUpperCase())
+        String cleanRole = request.getRole().trim();
+
+        Role role = roleRepository.findByNameIgnoreCase(cleanRole)
                 .orElseThrow(() -> new RuntimeException("Role not configured"));
 
         User user = new User();

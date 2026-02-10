@@ -26,21 +26,21 @@ public class DataInitializer {
         return args -> {
 
             // 1️⃣ Create roles if not exist
-            Role adminRole = roleRepository.findByName("ADMIN")
+            Role adminRole = roleRepository.findByNameIgnoreCase("ADMIN")
                     .orElseGet(() -> {
                         Role role = new Role();
                         role.setName("ADMIN");
                         return roleRepository.save(role);
                     });
 
-            Role userRole = roleRepository.findByName("USER")
+            Role userRole = roleRepository.findByNameIgnoreCase("USER")
                     .orElseGet(() -> {
                         Role role = new Role();
                         role.setName("USER");
                         return roleRepository.save(role);
                     });
 
-            Role farmerRole = roleRepository.findByName("FARMER")
+            Role farmerRole = roleRepository.findByNameIgnoreCase("FARMER")
                     .orElseGet(() -> {
                         Role role = new Role();
                         role.setName("FARMER");
