@@ -2,20 +2,42 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
 import { jwtDecode } from "jwt-decode";
 
+/* ---------- Restore user from token on refresh ---------- */
+const savedToken = localStorage.getItem("token");
+
+let savedUser = null;
+
+try {
+  if (savedToken) {
+    const decoded = jwtDecode(savedToken);
+
+    // check expiry
+    if (decoded.exp * 1000 > Date.now()) {
+      savedUser = decoded;
+    } else {
+      localStorage.removeItem("token");
+    }
+  }
+} catch {
+  localStorage.removeItem("token");
+}
+
+/* ---------- LOGIN ---------- */
 export const loginUser = createAsyncThunk("auth/login", async (data) => {
   const res = await api.post("/api/auth/login", data);
 
   const token = res.data.token;
   localStorage.setItem("token", token);
 
-  return jwtDecode(token); // contains role info
+  return jwtDecode(token); // contains role
 });
 
+/* ---------- SLICE ---------- */
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: null,
-    token: localStorage.getItem("token"),
+    user: savedUser,
+    token: savedUser ? savedToken : null,
   },
   reducers: {
     logout: (state) => {
@@ -26,7 +48,8 @@ const authSlice = createSlice({
   },
   extraReducers: (b) => {
     b.addCase(loginUser.fulfilled, (state, action) => {
-      state.user = action.payload; // 🔥 important
+      state.user = action.payload;
+      state.token = localStorage.getItem("token");
     });
   },
 });

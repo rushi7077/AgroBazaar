@@ -25,6 +25,15 @@ export default function ProductCard({ product }) {
             >
                 Buy
             </button>
+            {/* DELETE → ONLY ADMIN & FARMER */}
+            {(role === "ADMIN" || role === "FARMER") && (
+                <button
+                    onClick={() => handleDelete(p.id)}
+                    className="bg-red-600 text-white px-4 py-2 rounded"
+                >
+                    Delete
+                </button>
+            )}
         </div>
     );
 }
