@@ -2,7 +2,8 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchProducts } from "../features/products/productSlice";
-import { showError } from "../components/Toast";
+import api from "../api/axios";
+import { showSuccess, showError } from "../components/Toast";
 
 export default function Home() {
     const dispatch = useDispatch();
@@ -10,6 +11,9 @@ export default function Home() {
 
     const { items } = useSelector((s) => s.products);
     const { token } = useSelector((s) => s.auth);
+
+
+    const role = user?.role;
 
     useEffect(() => {
         dispatch(fetchProducts());
@@ -25,6 +29,18 @@ export default function Home() {
         // future: add to cart or place order
         alert("Buying product id: " + id);
     };
+
+    const handleDelete = async (id) => {
+        try {
+            await api.delete(`/api/products/${id}`);
+            showSuccess("Product deleted");
+
+            dispatch(fetchProducts()); // refresh list
+        } catch (err) {
+            showError(err?.response?.data?.message || "Delete failed");
+        }
+    };
+
 
     return (
         <div className="grid grid-cols-3 gap-4 p-6">
