@@ -5,6 +5,8 @@ import { fetchProducts } from "../features/products/productSlice";
 import api from "../api/axios";
 import { showSuccess, showError } from "../components/Toast";
 import ProductCard from "../components/ProductCard";
+import { addToCart } from "../features/cart/cartSlice";
+
 
 export default function Home() {
     const dispatch = useDispatch();
@@ -26,7 +28,9 @@ export default function Home() {
             return;
         }
 
-        alert("Buying product id: " + id);
+
+        dispatch(addToCart(product));
+        showSuccess("Added to cart");
     };
 
     const handleDelete = async (id) => {

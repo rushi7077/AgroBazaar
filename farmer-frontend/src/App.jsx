@@ -15,6 +15,8 @@ import AuthLayout from "./pages/auth/AuthLayout";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import AddProduct from "./pages/AddProduct";   // NEW
+import Cart from "./pages/Cart";
+
 
 
 export default function App() {
@@ -46,6 +48,15 @@ export default function App() {
                         </ProtectedRoute>
                     }
                 />
+                <Route
+                    path="/cart"
+                    element={
+                        <ProtectedRoute>
+                            <Cart />
+                        </ProtectedRoute>
+                    }
+                />
+
 
             </Routes>
         </BrowserRouter>
