@@ -110,7 +110,10 @@ export default function Cart() {
             {/* CHECKOUT BUTTON */}
             <div className="text-right">
                 <button
-                    onClick={placeOrder}
+                    onClick={() => {
+                        console.log("button clicked");
+                        placeOrder();                        
+                    }}
                     className="bg-green-600 text-white px-6 py-2 rounded text-lg"
                 >
                     Checkout & Place Order

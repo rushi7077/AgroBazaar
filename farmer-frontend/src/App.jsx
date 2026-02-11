@@ -4,7 +4,6 @@ import "react-toastify/dist/ReactToastify.css";
 
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import Orders from "./pages/Orders";
 import FarmerDashboard from "./pages/FarmerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import Profile from "./pages/Profile";
@@ -15,6 +14,11 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import AddProduct from "./pages/AddProduct";   // NEW
 import Cart from "./pages/Cart";
+
+import UserOrders from "./pages/UserOrders";
+import FarmerOrders from "./pages/FarmerOrders";
+import AdminOrders from "./pages/AdminOrders";
+
 
 
 
@@ -34,7 +38,6 @@ export default function App() {
                     <Route path="register" element={<Register />} />
                 </Route>
 
-                <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
                 <Route path="/farmer" element={<ProtectedRoute><FarmerDashboard /></ProtectedRoute>} />
                 <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
@@ -55,6 +58,10 @@ export default function App() {
                         </ProtectedRoute>
                     }
                 />
+                <Route path="/my-orders" element={<ProtectedRoute><UserOrders /></ProtectedRoute>} />
+                <Route path="/farmer-orders" element={<ProtectedRoute><FarmerOrders /></ProtectedRoute>} />
+                <Route path="/admin-orders" element={<ProtectedRoute><AdminOrders /></ProtectedRoute>} />
+
 
 
             </Routes>

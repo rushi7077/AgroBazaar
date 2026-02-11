@@ -30,7 +30,7 @@ export default function Navbar() {
                 {role === "ADMIN" && (
                     <>
                         <Link to='/'>Products</Link>
-                        <Link to="/orders">Orders</Link>
+                        <Link to="/admin-orders">Orders</Link>
                         <Link to="/add-product">Add Product</Link> 
                         <Link to="/admin">Admin Dashboard</Link>
                         <Link to="/profile">Profile</Link>
@@ -42,7 +42,7 @@ export default function Navbar() {
                 {role === "FARMER" && (
                     <>
                         <Link to='/'>Products</Link>
-                        <Link to="/orders">Orders</Link>
+                        <Link to="/farmer-orders">Orders</Link>
                         <Link to="/add-product">Add Product</Link> 
                         <Link to="/farmer">Farmer Dashboard</Link>
                         <Link to="/profile">Profile</Link>
@@ -54,6 +54,7 @@ export default function Navbar() {
                 {role === "USER" && (
                     <>
                         <Link to='/'>Products</Link>
+                        <Link to="/my-orders">Orders</Link>
                         <Link to="/cart">Cart</Link>
                         <Link to="/profile">Profile</Link>
                         <button onClick={handleLogout}>Logout</button>
