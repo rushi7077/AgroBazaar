@@ -8,7 +8,6 @@ import Orders from "./pages/Orders";
 import FarmerDashboard from "./pages/FarmerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import Profile from "./pages/Profile";
-import Cart from "./pages/Cart";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthLayout from "./pages/auth/AuthLayout";

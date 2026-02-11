@@ -16,15 +16,41 @@ const cartSlice = createSlice({
       }
     },
 
-    removeFromCart: (state, action) => {
-      state.items = state.items.filter((i) => i.id !== action.payload);
-    },
+    increaseQty: (state, action) => {
+    const item = state.items.find(i => i.id === action.payload);
+    if (item) item.quantity += 1;
+  },
 
-    clearCart: (state) => {
-      state.items = [];
-    },
+  decreaseQty: (state, action) => {
+    const item = state.items.find(i => i.id === action.payload);
+
+    if (!item) return;
+
+    if (item.quantity > 1) {
+      item.quantity -= 1;
+    } else {
+      state.items = state.items.filter(i => i.id !== action.payload);
+    }
+  },
+
+  /** ✅ NEW — direct remove */
+  removeFromCart: (state, action) => {
+    state.items = state.items.filter(i => i.id !== action.payload);
+  },
+
+  clearCart: (state) => {
+    state.items = [];
+  },
+
   },
 });
 
-export const { addToCart, removeFromCart, clearCart } = cartSlice.actions;
+export const {
+  addToCart,
+  increaseQty,
+  decreaseQty,
+  removeFromCart,
+  clearCart,
+} = cartSlice.actions;
+
 export default cartSlice.reducer;

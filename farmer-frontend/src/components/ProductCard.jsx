@@ -7,10 +7,10 @@ export default function ProductCard({ product, onBuy, onDelete, role }) {
             <div className="flex gap-2 mt-2">
                 {/* BUY */}
                 <button
-                    onClick={() => onBuy(product.id)}
+                    onClick={() => onBuy(product)}
                     className="bg-green-600 text-white px-3 py-1 rounded"
                 >
-                    Buy
+                    Add to Cart
                 </button>
 
                 {/* DELETE → ONLY ADMIN & FARMER */}

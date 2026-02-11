@@ -21,17 +21,25 @@ export default function Home() {
         dispatch(fetchProducts());
     }, [dispatch]);
 
-    const handleBuy = (id) => {
+    const handleBuy = (product) => {
         if (!token) {
             showError("Please login first");
             navigate("/auth/login");
             return;
         }
 
+        dispatch(
+            addToCart({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                category: product.category,
+            })
+        );
 
-        dispatch(addToCart(product));
         showSuccess("Added to cart");
     };
+
 
     const handleDelete = async (id) => {
         try {
