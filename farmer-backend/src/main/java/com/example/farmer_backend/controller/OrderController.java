@@ -71,11 +71,19 @@ public class OrderController {
     // ✅ USER GET THEIR ORDERS
     @GetMapping("/my")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<?> getMyOrders(Authentication auth) {
-        User user = userRepository.findByEmail(auth.getName())
-                .orElseThrow();
+    public ResponseEntity<?> getMyOrders(Authentication authentication) {
+        System.out.println("🔥 getMyOrders called");
+
+
+        String email = authentication.getName(); // extracted from JWT
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         return ResponseEntity.ok(orderRepository.findByUserId(user.getId()));
     }
+
+
 
     // ✅ FARMER GET ORDERS FOR THEIR PRODUCTS
     @GetMapping("/farmer")
