@@ -1,6 +1,8 @@
 package com.example.farmer_backend.controller;
 
+import com.example.farmer_backend.dto.OrderItemResponse;
 import com.example.farmer_backend.dto.OrderRequest;
+import com.example.farmer_backend.dto.OrderResponse;
 import com.example.farmer_backend.model.*;
 import com.example.farmer_backend.repository.*;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +32,11 @@ public class OrderController {
         this.userRepository = userRepository;
     }
 
-    // ✅ USER PLACES ORDER
+    // ================= USER PLACE ORDER =================
     @PostMapping
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> placeOrder(@RequestBody OrderRequest request, Authentication auth) {
+
         User user = userRepository.findByEmail(auth.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -56,58 +59,122 @@ public class OrderController {
             item.setOrder(order);
             item.setStatus("PENDING");
 
-
             total += product.getPrice() * itemReq.getQuantity();
             items.add(item);
         }
 
         order.setTotalAmount(total);
         order.setItems(items);
+
         orderRepository.save(order);
 
-        return ResponseEntity.ok(order);
+        return ResponseEntity.ok("Order placed successfully");
     }
 
-    // ✅ USER GET THEIR ORDERS
+    // ================= USER GET MY ORDERS =================
     @GetMapping("/my")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> getMyOrders(Authentication authentication) {
-        System.out.println("🔥 getMyOrders called");
 
-
-        String email = authentication.getName(); // extracted from JWT
+        String email = authentication.getName();
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return ResponseEntity.ok(orderRepository.findByUserId(user.getId()));
+        // ⭐ ONLY THIS USER'S ORDERS
+        List<Order> orders = orderRepository.findByUserIdWithItems(user.getId());
+
+        int counter = 1;
+
+        List<OrderResponse> response = new ArrayList<>();
+
+        for (Order order : orders) {
+
+            OrderResponse dto = new OrderResponse();
+            dto.displayOrderNo = counter++;   // ⭐ resets per user
+            dto.id = order.getId();
+            dto.status = order.getStatus();
+            dto.totalAmount = order.getTotalAmount();
+
+            dto.items = order.getItems().stream().map(item -> {
+                OrderItemResponse i = new OrderItemResponse();
+                i.id = item.getId();
+                i.productName = item.getProduct().getName();
+                i.quantity = item.getQuantity();
+                i.price = item.getPrice();
+                i.status = item.getStatus();
+                return i;
+            }).toList();
+
+            response.add(dto);
+        }
+
+        return ResponseEntity.ok(response);
     }
 
 
-
-    // ✅ FARMER GET ORDERS FOR THEIR PRODUCTS
+    // ================= FARMER ORDERS =================
     @GetMapping("/farmer")
     @PreAuthorize("hasAuthority('FARMER')")
     public ResponseEntity<?> getFarmerOrders(Authentication auth) {
-        User farmer = userRepository.findByEmail(auth.getName()).orElseThrow();
+
+        User farmer = userRepository.findByEmail(auth.getName())
+                .orElseThrow(() -> new RuntimeException("Farmer not found"));
+
         return ResponseEntity.ok(orderItemRepository.findByFarmerId(farmer.getId()));
     }
 
-    // ✅ ADMIN GET ALL ORDERS
+    // ================= ADMIN ALL ORDERS =================
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> getAllOrders() {
-        return ResponseEntity.ok(orderRepository.findAll());
+
+        List<Order> orders = orderRepository.findAllWithItems();
+
+        List<OrderResponse> response = new ArrayList<>();
+
+        int counter = 1;
+
+        for (Order order : orders) {
+
+            OrderResponse dto = new OrderResponse();
+            dto.displayOrderNo = counter++;   // ⭐ global order numbering for admin
+            dto.id = order.getId();
+            dto.status = order.getStatus();
+            dto.totalAmount = order.getTotalAmount();
+
+            dto.userName = order.getUser().getName();
+            dto.userEmail = order.getUser().getEmail();
+
+
+            dto.items = order.getItems().stream().map(item -> {
+                OrderItemResponse i = new OrderItemResponse();
+                i.id = item.getId();
+                i.productName = item.getProduct().getName();
+                i.quantity = item.getQuantity();
+                i.price = item.getPrice();
+                i.status = item.getStatus();
+                return i;
+            }).toList();
+
+            response.add(dto);
+        }
+
+        return ResponseEntity.ok(response);
     }
 
-    // ✅ ADMIN / USER UPDATE STATUS (example)
+    // ================= ADMIN UPDATE STATUS =================
     @PutMapping("/{orderId}/status")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> updateStatus(@PathVariable Long orderId, @RequestParam String status) {
+    public ResponseEntity<?> updateStatus(@PathVariable Long orderId,
+                                          @RequestParam String status) {
+
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
+
         order.setStatus(status.toUpperCase());
         orderRepository.save(order);
-        return ResponseEntity.ok(order);
+
+        return ResponseEntity.ok("Order status updated");
     }
 }

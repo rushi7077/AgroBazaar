@@ -1,5 +1,6 @@
 package com.example.farmer_backend.security;
 
+import com.example.farmer_backend.model.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
@@ -13,24 +14,38 @@ public class JwtUtil {
     private static final String SECRET =
             "farmer-backend-secret-key-farmer-backend-123456";
 
-    private static final long EXPIRATION = 86400000;
+    private static final long EXPIRATION = 86400000; // 1 day
 
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
 
-    public String generateToken(String email,String role) {
+    // ✅ GENERATE TOKEN WITH FULL USER DATA
+    public String generateToken(User user) {
         return Jwts.builder()
-                .setSubject(email)
-                .claim("role", role) // 🔥 add role into JWT
+                .setSubject(user.getEmail())                 // username
+                .claim("id", user.getId())                   // ⭐ user id
+                .claim("role", user.getRole().getName())     // ⭐ role
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
+    // ✅ EXTRACT EMAIL
     public String extractUsername(String token) {
         return getClaims(token).getSubject();
     }
 
+    // ✅ EXTRACT ROLE
+    public String extractRole(String token) {
+        return getClaims(token).get("role", String.class);
+    }
+
+    // ✅ EXTRACT USER ID
+    public Long extractUserId(String token) {
+        return getClaims(token).get("id", Long.class);
+    }
+
+    // ✅ VALIDATE TOKEN
     public boolean validateToken(String token) {
         try {
             getClaims(token);
@@ -40,6 +55,7 @@ public class JwtUtil {
         }
     }
 
+    // ✅ INTERNAL CLAIM PARSER
     private Claims getClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)

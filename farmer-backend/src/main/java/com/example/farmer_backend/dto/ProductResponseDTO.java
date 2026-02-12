@@ -12,5 +12,6 @@ public class ProductResponseDTO {
     private int quantity;
     private String category;
     private FarmerDTO farmer;
+    public Long farmerId;
 }
 

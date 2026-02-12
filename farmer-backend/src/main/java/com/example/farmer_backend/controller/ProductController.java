@@ -152,7 +152,8 @@ public class ProductController {
                         product.getFarmer().getId(),
                         product.getFarmer().getName(),
                         product.getFarmer().getEmail()
-                )
+                ),
+                product.getFarmer().getId()
         );
     }
     // 🔍 SEARCH & FILTER PRODUCTS
