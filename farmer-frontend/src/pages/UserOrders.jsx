@@ -31,7 +31,7 @@ export default function UserOrders() {
             {orders.map((order) => (
                 <div key={order.id} className="border rounded-xl p-4 shadow">
                     <div className="flex justify-between font-semibold">
-                        <span>Order #{order.id}</span>
+                        <span>Order #{order.displayOrderNo}</span>
                         <span>Status: {order.status}</span>
                     </div>
 
