@@ -18,14 +18,7 @@ export default function UserOrders() {
         loadOrders();
     }, []);
 
-    /* ---------- EMPTY ---------- */
-    if (!orders.length) {
-        return (
-            <p className="p-6 text-center font-semibold">
-                No orders yet
-            </p>
-        );
-    }
+
 
     /* ---------- UI ---------- */
     return (
