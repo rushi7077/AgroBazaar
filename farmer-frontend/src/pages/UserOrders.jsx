@@ -14,6 +14,10 @@ export default function UserOrders() {
         }
     };
 
+    useEffect(() => {
+        loadOrders();
+    }, []);
+
     /* ---------- EMPTY ---------- */
     if (!orders.length) {
         return (
