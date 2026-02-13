@@ -21,9 +21,9 @@ public class JwtUtil {
     // ✅ GENERATE TOKEN WITH FULL USER DATA
     public String generateToken(User user) {
         return Jwts.builder()
-                .setSubject(user.getEmail())                 // username
-                .claim("id", user.getId())                   // ⭐ user id
-                .claim("role", user.getRole().getName())     // ⭐ role
+                .setSubject(user.getEmail())
+                .claim("role", user.getRole().getName())
+                .claim("id", user.getId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -35,15 +35,6 @@ public class JwtUtil {
         return getClaims(token).getSubject();
     }
 
-    // ✅ EXTRACT ROLE
-    public String extractRole(String token) {
-        return getClaims(token).get("role", String.class);
-    }
-
-    // ✅ EXTRACT USER ID
-    public Long extractUserId(String token) {
-        return getClaims(token).get("id", Long.class);
-    }
 
     // ✅ VALIDATE TOKEN
     public boolean validateToken(String token) {

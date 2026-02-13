@@ -116,18 +116,22 @@ public class ProductController {
                     .body("You can delete only your own products");
         }
 
-        productRepository.delete(product);
+        product.setDeleted(true);
+        productRepository.save(product);
+
         return ResponseEntity.ok("Product deleted successfully");
+
     }
 
     // ✅ ALL ROLES → VIEW PRODUCTS
     @GetMapping
     public List<ProductResponseDTO> getAllProducts() {
-        return productRepository.findAll()
+        return productRepository.findByDeletedFalse()
                 .stream()
                 .map(this::mapToDTO)
                 .toList();
     }
+
 
 
     // ✅ ALL ROLES → VIEW PRODUCT BY ID

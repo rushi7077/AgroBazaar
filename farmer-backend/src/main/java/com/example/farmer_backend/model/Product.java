@@ -24,4 +24,8 @@ public class Product {
     @ManyToOne
     @JsonIgnoreProperties("products")
     private User farmer;
+
+    @Column(name = "is_deleted")
+    private boolean deleted = false;
+
 }

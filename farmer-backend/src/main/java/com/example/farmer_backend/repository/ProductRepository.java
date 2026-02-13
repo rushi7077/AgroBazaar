@@ -23,4 +23,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByCategory_NameIgnoreCaseAndPriceBetween(
             String categoryName, Double min, Double max
     );
+    List<Product> findByDeletedFalse();
+
 }

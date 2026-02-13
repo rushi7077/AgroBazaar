@@ -42,7 +42,7 @@ public class OrderController {
 
         Order order = new Order();
         order.setUser(user);
-        order.setStatus("CREATED");
+        order.setStatus("PENDING");   // ⭐ important
 
         List<OrderItem> items = new ArrayList<>();
         double total = 0;
@@ -68,8 +68,33 @@ public class OrderController {
 
         orderRepository.save(order);
 
-        return ResponseEntity.ok("Order placed successfully");
+        return ResponseEntity.ok(order.getId()); // ⭐ return orderId
     }
+    @PutMapping("/{orderId}/pay")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> payOrder(@PathVariable Long orderId,
+                                      Authentication authentication) {
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        // ⭐ SECURITY CHECK → user can pay only own order
+        if (!order.getUser().getId().equals(user.getId())) {
+            return ResponseEntity.status(403).body("Not your order");
+        }
+
+        order.setStatus("PAID");
+        orderRepository.save(order);
+
+        return ResponseEntity.ok("Payment successful");
+    }
+
+
 
     // ================= USER GET MY ORDERS =================
     @GetMapping("/my")
@@ -78,11 +103,15 @@ public class OrderController {
 
         String email = authentication.getName();
 
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // ⭐ ONLY THIS USER'S ORDERS
         List<Order> orders = orderRepository.findByUserIdWithItems(user.getId());
+
+        System.out.println("JWT EMAIL = " + email);
+        System.out.println("USER ID = " + user.getId());
 
         int counter = 1;
 
@@ -177,4 +206,93 @@ public class OrderController {
 
         return ResponseEntity.ok("Order status updated");
     }
+    @PutMapping("/item/{itemId}/decision")
+    @PreAuthorize("hasAnyAuthority('ADMIN','FARMER')")
+    public ResponseEntity<?> decideItem(@PathVariable Long itemId,
+                                        @RequestParam String decision,
+                                        Authentication auth) {
+
+        OrderItem item = orderItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Item not found"));
+
+        User seller = userRepository.findByEmail(auth.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // ✔ farmer security
+        if (seller.getRole().getName().equals("FARMER")
+                && !item.getFarmer().getId().equals(seller.getId())) {
+            return ResponseEntity.status(403).body("Not your product order");
+        }
+
+        // ⭐ IMPORTANT → order must be PAID first
+        if (!item.getOrder().getStatus().equals("PAID")) {
+            return ResponseEntity.badRequest().body("Order not paid yet");
+        }
+
+        if (!decision.equalsIgnoreCase("ACCEPTED")
+                && !decision.equalsIgnoreCase("REJECTED")) {
+            return ResponseEntity.badRequest().body("Invalid decision");
+        }
+
+        item.setStatus(decision.toUpperCase());
+        orderItemRepository.save(item);
+
+        // ⭐ update overall order status
+        updateOrderStatus(item.getOrder());
+
+        return ResponseEntity.ok("Item " + decision);
+    }
+
+    private void updateOrderStatus(Order order) {
+
+        boolean anyRejected = order.getItems().stream()
+                .anyMatch(i -> i.getStatus().equals("REJECTED"));
+
+        boolean allAccepted = order.getItems().stream()
+                .allMatch(i -> i.getStatus().equals("ACCEPTED"));
+
+        boolean allCompleted = order.getItems().stream()
+                .allMatch(i -> i.getStatus().equals("COMPLETED"));
+
+        if (allCompleted) {
+            order.setStatus("COMPLETED");
+        } else if (anyRejected) {
+            order.setStatus("PARTIAL");
+        } else if (allAccepted) {
+            order.setStatus("ACCEPTED");
+        }
+
+        orderRepository.save(order);
+    }
+
+
+    @PutMapping("/item/{itemId}/complete")
+    @PreAuthorize("hasAnyAuthority('ADMIN','FARMER')")
+    public ResponseEntity<?> completeItem(@PathVariable Long itemId,
+                                          Authentication auth) {
+
+        OrderItem item = orderItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Item not found"));
+
+        User seller = userRepository.findByEmail(auth.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (seller.getRole().getName().equals("FARMER")
+                && !item.getFarmer().getId().equals(seller.getId())) {
+            return ResponseEntity.status(403).body("Not your product order");
+        }
+
+        if (!item.getStatus().equals("ACCEPTED")) {
+            return ResponseEntity.badRequest().body("Item must be ACCEPTED first");
+        }
+
+        item.setStatus("COMPLETED");
+        orderItemRepository.save(item);
+
+        // ⭐ sync overall order
+        updateOrderStatus(item.getOrder());
+
+        return ResponseEntity.ok("Item completed");
+    }
+
 }
