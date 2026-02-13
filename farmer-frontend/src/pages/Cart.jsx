@@ -8,6 +8,8 @@ import {
 } from "../features/cart/cartSlice";
 import { showSuccess, showError } from "../components/Toast";
 
+
+
 export default function Cart() {
     const dispatch = useDispatch();
     const { items } = useSelector((s) => s.cart);
@@ -21,16 +23,22 @@ export default function Cart() {
     /* ---------- PLACE ORDER ---------- */
     const placeOrder = async () => {
         try {
-            await api.post("/api/orders", {
+            const res = await api.post("/api/orders", {
                 items: items.map((i) => ({
                     productId: i.id,
                     quantity: i.quantity,
                 })),
             });
 
+            const orderId = res.data;   // ⭐ comes from backend
+
             dispatch(clearCart());
-            showSuccess("Order placed successfully");
+
+            // ⭐ go to fake payment page
+            window.location.href = `/payment/${orderId}`;
+
         } catch (err) {
+            console.error(err);
             showError("Failed to place order");
         }
     };

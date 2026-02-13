@@ -18,6 +18,7 @@ import Cart from "./pages/Cart";
 import UserOrders from "./pages/UserOrders";
 import FarmerOrders from "./pages/FarmerOrders";
 import AdminOrders from "./pages/AdminOrders";
+import FakePayment from "./pages/FakePayment";
 
 
 
@@ -61,6 +62,8 @@ export default function App() {
                 <Route path="/my-orders" element={<ProtectedRoute><UserOrders /></ProtectedRoute>} />
                 <Route path="/farmer-orders" element={<ProtectedRoute><FarmerOrders /></ProtectedRoute>} />
                 <Route path="/admin-orders" element={<ProtectedRoute><AdminOrders /></ProtectedRoute>} />
+
+                <Route path="/payment/:orderId" element={<FakePayment />} />
 
 
 
