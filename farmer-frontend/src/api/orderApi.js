@@ -14,6 +14,11 @@ export const getFarmerOrdersApi = async () => {
   return res.data;
 };
 
+/* ADMIN */
+export const getAllOrdersApi = async () => {
+  const res = await api.get("/api/orders");
+  return res.data; // ⭐ VERY IMPORTANT
+};
 
 /* SELLER ACTIONS */
 export const decideItemApi = (itemId, decision) =>
