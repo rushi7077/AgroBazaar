@@ -23,3 +23,6 @@ export const getAllOrdersApi = async () => {
 /* SELLER ACTIONS */
 export const decideItemApi = (itemId, decision) =>
   api.put(`/api/orders/item/${itemId}/decision?decision=${decision}`);
+
+export const completeItemApi = (itemId) =>
+  api.put(`/api/orders/item/${itemId}/complete`);
