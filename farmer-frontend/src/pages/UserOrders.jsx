@@ -35,11 +35,7 @@ export default function UserOrders() {
             {orders.map((order) => (
                 <div key={order.id} className="border rounded-xl p-4 shadow">
 
-                    {/* HEADER */}
-                    <div className="flex justify-between font-semibold">
-                        <span>Order #{order.displayOrderNo}</span>
-                        <span>Status: {order.status}</span>
-                    </div>
+                   
 
                     {/* TOTAL */}
                     <p className="text-sm text-gray-500 mb-2">
