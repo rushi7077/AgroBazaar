@@ -5,7 +5,7 @@ export default function Profile() {
     const token = getToken();
     if (!token) return <p className="p-6">Not logged in</p>;
 
-    const user = jwtDecode(token);
+ 
 
     return (
         <div className="p-6">
