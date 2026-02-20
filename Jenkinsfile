@@ -16,6 +16,14 @@ pipeline {
             }
         }
 
+        stage('Build Backend JAR') {
+            steps {
+                dir('farmer-backend') {
+                    sh 'mvn clean package -DskipTests'
+                }
+            }
+        }
+
         stage('Build Backend Image') {
             steps {
                 dir('farmer-backend') {
