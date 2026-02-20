@@ -11,7 +11,7 @@ export default function Profile() {
         <div className="p-6">
             <h1 className="text-xl font-bold mb-4">My Profile</h1>
             <p><b>Name:</b> {user.sub}</p>
-            <p><b>Role:</b> {user.role }</p>
+            <p><b>Role:</b> {user.role || user.authorities?.[0]}</p>
         </div>
     );
 }
