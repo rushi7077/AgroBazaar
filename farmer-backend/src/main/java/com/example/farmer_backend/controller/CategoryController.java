@@ -30,14 +30,7 @@ public class CategoryController {
         return categoryRepository.save(category);
     }
 
-    @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public Category update(@PathVariable Long id, @RequestBody Category body) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-        category.setName(body.getName());
-        return categoryRepository.save(category);
-    }
+
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
