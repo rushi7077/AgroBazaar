@@ -63,7 +63,13 @@ public class DataInitializer {
             }
 
             // 🌱 DEFAULT CATEGORIES
-
+            List<String> categories = List.of(
+                    "Vegetables",
+                    "Fruits",
+                    "Grains",
+                    "Dairy",
+                    "Others"
+            );
 
             for (String name : categories) {
                 categoryRepository.findByName(name)
