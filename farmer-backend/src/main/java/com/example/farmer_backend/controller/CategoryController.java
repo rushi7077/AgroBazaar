@@ -39,5 +39,9 @@ public class CategoryController {
         return categoryRepository.save(category);
     }
 
-
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public void delete(@PathVariable Long id) {
+        categoryRepository.deleteById(id);
+    }
 }
